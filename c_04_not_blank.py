@@ -7,4 +7,4 @@ def not_blank(question, err="This is blank, please enter real characters"):
             print(err)
 
 
-not_blank("What is your IP address")
+not_blank("What is your IP address", "This is blank, dont try and hide it from me.")

@@ -18,6 +18,10 @@ def not_blank(question, err="This is blank, please enter real characters"):
             print(err)
 
 
+def round_up(amount, round_to):
+    return int(math.ceil(amount / round_to)) * round_to
+
+
 def int_check(question, low_num=None, high_num=None, exit_code=None, n_type=int):
     situation = ""
 
@@ -78,6 +82,8 @@ def statement_generator(statement, decoration, dec_mode=1):
     print(top_bottom)
     print(middle if dec_mode == 1 else 6 * " " + statement)
     print(top_bottom)
+
+    return f"{top_bottom}\n{middle}\n{top_bottom}"
 
 
 def profit_goal(total_costs):
@@ -169,13 +175,19 @@ def get_expenses(var_fixed):
     return [var_frame, sub_total]
 
 
-print("🧮 Instructions 🧮\n" if choice_checker("Do you want to see the instructions? ") == "yes" else "")
+print("🧮 Instructions 🧮\n"
+      "-- Starting off --\n-Put insert Product Name\n- Insert the amount of items you will be producing\n"
+      "\nInsert your item/stock amounts and prices"
+      "\nIf you have fixed costs (e,g; Rent/Building/Stalls) Having 1 and only paying it once, say yes to fixed costs."
+      "\nNow the program will do all the work"
+      if choice_checker("Do you want to see the instructions? ") == "yes" else "")
 
 # MAIN ROUTINE ---
 
 # Gather variable costs & product name and set values after user inputs
 print(5 * "*", "Variable Costs", 5 * "*")
 product_name = not_blank("What is your product name: ")
+how_many = int_check("How many items will you be producing?", 1)
 
 var_expenses = get_expenses("variable")
 var_exp_frame = var_expenses[0]
@@ -194,6 +206,7 @@ if choice_checker("Do you have Fixed costs? (y / n)?") == "yes":
     fixed_costs_print = 3 * "-" + " Fixed costs " + 3 * "-" + "\n\n" \
                                                               f"{fix_exp_frame}\n" \
                                                               f"--\nfixed costs: {currency(fix_exp_sub_total)}"
+
 # Gather today's date for file name and information
 today = date.today()
 write_date = f"{today.day}/{today.month}/{today.year}"
@@ -204,11 +217,23 @@ filename = f"FC_{sh_date}"
 all_costs = var_exp_sub_total + fix_exp_sub_total
 profit_targ = profit_goal(all_costs)
 
+sales_needed = all_costs + profit_targ
+round_to = int_check("Round to nearest...", 1)
+
+selling_price = sales_needed / how_many
+print(f"Selling price (unrounded): {selling_price}")
+
+recommended_price = round_up(selling_price, round_to)
+
+
 # What is going to the file & along with print
 to_save = (
-    f"\n\n--- Variable costs ---\n\n{var_exp_frame}\n---\nVar costs: {currency(var_exp_sub_total)}\n{fixed_costs_print}"
+    f"{statement_generator(product_name, '=')} {sh_date}"
+    f"\n\n--- Variable costs ---\n\n{var_exp_frame}\n---\nVar costs: {currency(var_exp_sub_total)}\n\n"
+    f"{fixed_costs_print}"
     f"\n\nProfit Target: {currency(profit_targ)}\n"
-    f"Total sales {currency(all_costs + profit_targ, 1)}"
+    f"Total sales {currency(all_costs + profit_targ, 1)}\n"
+    f"Minimum price {currency(selling_price)} | Recommended price: {currency(recommended_price)}"
 )
 # Print all items before saving items to file
 print(to_save)

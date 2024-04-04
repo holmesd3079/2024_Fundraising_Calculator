@@ -1,3 +1,6 @@
+import math
+
+
 def int_check(question, low_num=None, high_num=None, exit_code=None, n_type=int):
     situation = ""
 
@@ -38,7 +41,28 @@ def int_check(question, low_num=None, high_num=None, exit_code=None, n_type=int)
             print(error_msg)
 
 
-my_number = int_check("n", 0, None, "xxx", float)
-print(my_number)
+def currency(x, ceil=None):
+    if ceil:
+        x = math.ceil(x)
+    return f"${format(x, '.2f')}"
 
 
+def round_up(amount, round_to):
+    return int(math.ceil(amount / round_to)) * round_to
+
+
+how_many = int_check("How many items?", 0)
+total = int_check("Total costs?", 0, n_type=float)
+prof_goal = int_check("Profit Goal?", 0, n_type=float)
+rnd_to = int_check("Round to nearest...?", 0)
+
+sales_needed = total + prof_goal
+
+print(f"Total: {currency(total)}\n"
+      f"Profit Goal: {prof_goal}")
+
+selling_price = sales_needed/how_many
+print(f"Selling price (un-rounded): {currency(selling_price)}")
+
+recommended_price = round_up(selling_price, rnd_to)
+print(f"Recommended price {currency(recommended_price)}")
